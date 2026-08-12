@@ -1,0 +1,237 @@
+/* --- Palette + resets ---------------------------------------------------- */
+:root {
+    --bg-0: #05070b;
+    --bg-1: #0a0d13;
+    --bg-2: #10151f;
+    --bg-3: #161d2b;
+    --line: #212a3a;
+    --text: #e6edf7;
+    --text-dim: #8b95a8;
+    --accent: #1fd3ff;
+    --accent-2: #7dd3fc;
+    --good: #37e08a;
+    --warn: #ffb02e;
+    --bad:  #ff2b3a;
+    --best: #b98cff;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+    --font: "Rajdhani", "Titillium Web", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: radial-gradient(circle at top, #101827 0%, var(--bg-0) 60%);
+    color: var(--text);
+    font-family: var(--font);
+    letter-spacing: 0.02em;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+}
+
+/* --- Top bar ------------------------------------------------------------- */
+.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    background: linear-gradient(180deg, rgba(31, 211, 255, 0.06), transparent);
+    border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; }
+.brand em { color: var(--accent); font-style: normal; letter-spacing: 0.28em; margin-left: 4px; }
+.brand-mark {
+    display: inline-block; width: 14px; height: 14px; border-radius: 3px;
+    background: linear-gradient(135deg, var(--accent), var(--best));
+    box-shadow: 0 0 12px rgba(31, 211, 255, 0.6);
+}
+.status { color: var(--text-dim); font-size: 13px; letter-spacing: 0.08em; }
+.status .sep { margin: 0 8px; opacity: 0.5; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.dot-on  { background: var(--good); box-shadow: 0 0 8px var(--good); }
+.dot-off { background: var(--bad);  box-shadow: 0 0 8px var(--bad); }
+.dot-wait { background: var(--warn); box-shadow: 0 0 8px var(--warn); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.diag {
+    font-family: var(--mono);
+    font-size: 11px; color: var(--text-dim);
+    letter-spacing: 0.04em;
+}
+.diag.warn { color: var(--warn); }
+.diag.bad  { color: var(--bad); }
+
+/* Prominent "no telemetry" banner (only shown when SignalR is connected but
+   no packets are actually flowing from the source). */
+.stale-banner {
+    display: flex; gap: 12px; align-items: center; justify-content: center;
+    padding: 10px 16px; margin: 10px 16px 0;
+    background: rgba(255, 176, 46, 0.10);
+    border: 1px solid var(--warn);
+    color: var(--warn);
+    border-radius: 8px;
+    font-size: 13px; letter-spacing: 0.08em;
+}
+.stale-banner strong { letter-spacing: 0.14em; }
+.stale-banner.hidden { display: none; }
+.stale-banner.bad {
+    background: rgba(255, 43, 58, 0.10);
+    border-color: var(--bad);
+    color: var(--bad);
+}
+
+.unit-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.unit {
+    background: transparent; color: var(--text-dim); border: none; padding: 6px 12px;
+    font-family: var(--font); font-weight: 600; letter-spacing: 0.12em; cursor: pointer; font-size: 12px;
+}
+.unit.active { background: var(--accent); color: #05131c; }
+
+/* --- Layout -------------------------------------------------------------- */
+.dash {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 16px;
+    padding: 16px;
+    height: calc(100vh - 55px);
+    min-height: 600px;
+}
+.side { display: grid; grid-template-rows: auto auto auto auto; gap: 16px; min-height: 0; }
+.panel {
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    position: relative;
+}
+.panel h2 {
+    font-size: 12px; margin: 0 0 12px; letter-spacing: 0.28em;
+    color: var(--text-dim); font-weight: 600;
+}
+
+/* --- Main / RPM panel ---------------------------------------------------- */
+.panel.main {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px 18px 18px;
+}
+.rpm-shift-lights {
+    display: flex; gap: 5px; justify-content: center;
+    margin-bottom: 6px; height: 14px;
+}
+.rpm-shift-lights .light {
+    width: 30px; height: 14px; border-radius: 2px;
+    background: #1a2231; border: 1px solid #232d40;
+    transition: background 60ms linear, box-shadow 60ms linear;
+}
+.rpm-shift-lights .light.on-green  { background: var(--good); box-shadow: 0 0 8px var(--good); }
+.rpm-shift-lights .light.on-yellow { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
+.rpm-shift-lights .light.on-red    { background: var(--bad);  box-shadow: 0 0 12px var(--bad); }
+.rpm-shift-lights.flash .light     { background: var(--bad);  box-shadow: 0 0 14px var(--bad); }
+
+.rpm-arc { width: min(680px, 100%); height: auto; margin-top: 6px; }
+
+.center-readout {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    margin-top: -110px; /* pull it into the arc */
+    z-index: 2;
+}
+.gear {
+    font-family: var(--mono);
+    font-weight: 700; font-size: 130px; line-height: 1;
+    color: var(--text);
+    text-shadow: 0 0 32px rgba(31, 211, 255, 0.35);
+}
+.gear.rev { color: var(--warn); }
+.gear.neutral { color: var(--text-dim); }
+.speed { display: flex; align-items: baseline; gap: 8px; }
+.speed-value { font-size: 60px; font-weight: 700; font-family: var(--mono); }
+.speed-unit  { color: var(--text-dim); font-size: 14px; letter-spacing: 0.2em; }
+.rpm-readout { color: var(--text-dim); font-size: 14px; letter-spacing: 0.15em; }
+.rpm-readout em { color: var(--text-dim); font-style: normal; opacity: 0.6; }
+
+/* --- Pedals -------------------------------------------------------------- */
+.pedals {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    width: 100%; margin-top: 20px;
+}
+.pedal { display: flex; flex-direction: column; }
+.pedal label {
+    font-size: 11px; color: var(--text-dim);
+    letter-spacing: 0.28em; margin-bottom: 4px;
+}
+.pedal span {
+    text-align: right; font-family: var(--mono); font-size: 14px; margin-top: 4px;
+    color: var(--text);
+}
+.pedal-bar {
+    height: 18px; background: #0d1420; border-radius: 3px; overflow: hidden;
+    border: 1px solid var(--line);
+}
+.pedal-fill { height: 100%; width: 0; transition: width 40ms linear; }
+.pedal-fill.throttle { background: linear-gradient(90deg, #10b981, #37e08a); }
+.pedal-fill.brake    { background: linear-gradient(90deg, #b91c1c, #ff2b3a); }
+
+/* --- Side panels --------------------------------------------------------- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.grid-2 label {
+    font-size: 10px; letter-spacing: 0.28em; color: var(--text-dim); display: block;
+    margin-bottom: 4px;
+}
+.metric {
+    font-family: var(--mono); font-size: 26px; font-weight: 600;
+}
+.metric.small { font-size: 16px; margin-top: 2px; }
+.metric em { color: var(--text-dim); font-style: normal; font-size: 13px; letter-spacing: 0.14em; margin-left: 4px; }
+.metric.best { color: var(--best); }
+
+/* Tire grid */
+.tire-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.tire {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; border-radius: 6px;
+    background: #0d1420; border: 1px solid var(--line);
+    font-family: var(--mono);
+}
+.tire .tag { color: var(--text-dim); letter-spacing: 0.18em; font-size: 12px; }
+.tire .temp { font-size: 20px; font-weight: 600; }
+.tire.cold  { border-color: #1e90ff; box-shadow: inset 0 0 22px rgba(30,144,255,0.15); }
+.tire.optimal { border-color: var(--good); box-shadow: inset 0 0 22px rgba(55, 224, 138, 0.15); }
+.tire.warm  { border-color: var(--warn); box-shadow: inset 0 0 22px rgba(255,176,46,0.20); }
+.tire.hot   { border-color: var(--bad);  box-shadow: inset 0 0 24px rgba(255,43,58,0.25); }
+
+/* Bar (fuel) */
+.bar {
+    height: 12px; background: #0d1420; border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
+}
+.fill { height: 100%; width: 0%; transition: width 200ms ease-out; }
+.fill.fuel { background: linear-gradient(90deg, var(--bad) 0%, var(--warn) 22%, var(--good) 40%); }
+
+/* Flag chips */
+.flag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.flag {
+    padding: 5px 10px; border-radius: 4px;
+    background: #0d1420; border: 1px solid var(--line);
+    font-size: 11px; letter-spacing: 0.2em; color: var(--text-dim);
+    transition: color 100ms, background 100ms, border-color 100ms, box-shadow 100ms;
+}
+.flag.active {
+    background: rgba(31, 211, 255, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 12px rgba(31, 211, 255, 0.25);
+}
+.flag[data-flag="revLimiter"].active,
+.flag[data-flag="paused"].active     { background: rgba(255,43,58,0.15); border-color: var(--bad); color: var(--bad); box-shadow: 0 0 10px rgba(255,43,58,0.35); }
+.flag[data-flag="tcs"].active,
+.flag[data-flag="asm"].active,
+.flag[data-flag="handbrake"].active  { background: rgba(255,176,46,0.15); border-color: var(--warn); color: var(--warn); box-shadow: 0 0 10px rgba(255,176,46,0.25); }
+
+/* --- Responsive ---------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .dash { grid-template-columns: 1fr; height: auto; overflow: auto; }
+    body { overflow: auto; }
+    .center-readout { margin-top: -90px; }
+    .gear { font-size: 100px; }
+    .speed-value { font-size: 46px; }
+}

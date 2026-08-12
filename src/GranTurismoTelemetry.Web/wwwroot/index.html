@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0d13">
+    <title>GT7 Telemetry Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">
+        <span class="brand-mark"></span>
+        <span class="brand-text">GT7 <em>TELEMETRY</em></span>
+    </div>
+    <div class="status">
+        <span id="conn-dot" class="dot dot-off"></span>
+        <span id="conn-text">connecting…</span>
+        <span class="sep">·</span>
+        <span id="mode-text">—</span>
+        <span class="sep">·</span>
+        <span id="ip-text">—</span>
+        <span class="sep">·</span>
+        <span id="diag-text" class="diag" title="UDP diagnostics">—</span>
+    </div>
+    <div class="unit-toggle">
+        <button id="unit-kmh" class="unit active" data-unit="kmh">KM/H</button>
+        <button id="unit-mph" class="unit" data-unit="mph">MPH</button>
+    </div>
+</header>
+
+<div id="stale-banner" class="stale-banner hidden">
+    <strong>No telemetry.</strong>
+    <span id="stale-hint">Waiting for the first packet from the PS5…</span>
+</div>
+
+<main class="dash">
+    <!-- Left column: big RPM arc + gear/speed -->
+    <section class="panel main">
+        <div class="rpm-shift-lights" id="rpm-lights">
+            <!-- 15 blocks filled dynamically -->
+        </div>
+
+        <svg class="rpm-arc" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <defs>
+                <linearGradient id="rpmGrad" x1="0" x2="1">
+                    <stop offset="0"    stop-color="#1fd3ff"/>
+                    <stop offset="0.55" stop-color="#eaeaea"/>
+                    <stop offset="0.85" stop-color="#ffb02e"/>
+                    <stop offset="1"    stop-color="#ff2b3a"/>
+                </linearGradient>
+            </defs>
+            <!-- Background arc -->
+            <path d="M 30 210 A 170 170 0 0 1 370 210"
+                  fill="none" stroke="#141a24" stroke-width="26" stroke-linecap="round"/>
+            <!-- RPM fill arc -->
+            <path id="rpm-fill" d="M 30 210 A 170 170 0 0 1 370 210"
+                  fill="none" stroke="url(#rpmGrad)" stroke-width="26" stroke-linecap="round"
+                  pathLength="1000" stroke-dasharray="0 1000"/>
+            <!-- Redline tick -->
+            <g id="rpm-ticks" stroke="#6a7180" stroke-width="1.5"></g>
+        </svg>
+
+        <div class="center-readout">
+            <div class="gear" id="gear">N</div>
+            <div class="speed">
+                <span class="speed-value" id="speed">0</span>
+                <span class="speed-unit" id="speed-unit">km/h</span>
+            </div>
+            <div class="rpm-readout"><span id="rpm">0</span> <em>rpm</em></div>
+        </div>
+
+        <div class="pedals">
+            <div class="pedal">
+                <label>THROTTLE</label>
+                <div class="pedal-bar"><div id="throttle-bar" class="pedal-fill throttle"></div></div>
+                <span id="throttle-val">0%</span>
+            </div>
+            <div class="pedal">
+                <label>BRAKE</label>
+                <div class="pedal-bar"><div id="brake-bar" class="pedal-fill brake"></div></div>
+                <span id="brake-val">0%</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Right column: session, tires, misc -->
+    <aside class="side">
+        <section class="panel laps">
+            <h2>SESSION</h2>
+            <div class="grid-2">
+                <div><label>LAP</label><div class="metric" id="lap">-- / --</div></div>
+                <div><label>POSITION</label><div class="metric" id="position">--</div></div>
+                <div><label>LAST LAP</label><div class="metric" id="last-lap">--:--.---</div></div>
+                <div><label>BEST LAP</label><div class="metric best" id="best-lap">--:--.---</div></div>
+            </div>
+        </section>
+
+        <section class="panel tires">
+            <h2>TIRE TEMPERATURE</h2>
+            <div class="tire-grid">
+                <div class="tire" id="tire-fl"><span class="tag">FL</span><span class="temp">--</span></div>
+                <div class="tire" id="tire-fr"><span class="tag">FR</span><span class="temp">--</span></div>
+                <div class="tire" id="tire-rl"><span class="tag">RL</span><span class="temp">--</span></div>
+                <div class="tire" id="tire-rr"><span class="tag">RR</span><span class="temp">--</span></div>
+            </div>
+        </section>
+
+        <section class="panel car">
+            <h2>CAR</h2>
+            <div class="grid-2">
+                <div><label>FUEL</label>
+                    <div class="bar"><div id="fuel-bar" class="fill fuel"></div></div>
+                    <div class="metric small"><span id="fuel-pct">--</span>%</div>
+                </div>
+                <div><label>BOOST</label>
+                    <div class="metric" id="boost">-- <em>bar</em></div>
+                </div>
+                <div><label>OIL TEMP</label>
+                    <div class="metric" id="oil-temp">-- <em>°C</em></div>
+                </div>
+                <div><label>WATER TEMP</label>
+                    <div class="metric" id="water-temp">-- <em>°C</em></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel flags">
+            <h2>STATUS</h2>
+            <div class="flag-row">
+                <span class="flag" data-flag="onTrack">ON TRACK</span>
+                <span class="flag" data-flag="paused">PAUSED</span>
+                <span class="flag" data-flag="turbo">TURBO</span>
+                <span class="flag" data-flag="revLimiter">REV LIMIT</span>
+                <span class="flag" data-flag="tcs">TCS</span>
+                <span class="flag" data-flag="asm">ASM</span>
+                <span class="flag" data-flag="lights">LIGHTS</span>
+                <span class="flag" data-flag="handbrake">HANDBRAKE</span>
+            </div>
+        </section>
+    </aside>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
