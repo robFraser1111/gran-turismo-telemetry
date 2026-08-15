@@ -199,6 +199,16 @@ html, body {
 .tire.optimal { border-color: var(--good); box-shadow: inset 0 0 22px rgba(55, 224, 138, 0.15); }
 .tire.warm  { border-color: var(--warn); box-shadow: inset 0 0 22px rgba(255,176,46,0.20); }
 .tire.hot   { border-color: var(--bad);  box-shadow: inset 0 0 24px rgba(255,43,58,0.25); }
+/* When a tire is flagged dirty, fill the whole tile with a muddy brown so it's
+   unmistakable. The temperature-band border colour set by .cold/.optimal/.warm
+   /.hot stays as the outline, and .tag/.temp text is brightened so both the
+   wheel label (FL/FR/RL/RR) and the temperature stay readable on brown. */
+.tire.dirty {
+    background: #6b4423;
+    box-shadow: inset 0 0 22px rgba(48, 28, 10, 0.65);
+}
+.tire.dirty .tag  { color: #f2e2c9; }
+.tire.dirty .temp { color: #fff5e1; }
 
 /* Bar (fuel) */
 .bar {

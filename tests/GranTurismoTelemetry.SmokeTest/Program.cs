@@ -35,6 +35,17 @@ Console.WriteLine("=== GT7 telemetry smoke test ===");
     plaintext[0x90] = 0x04;                                                            // gear 4, no shift hint
     plaintext[0x91] = 200;                                                             // throttle
     plaintext[0x92] = 40;                                                              // brake
+    // Wheel block: angular speed (rad/s) at 0xA4, tire radius at 0xB4, suspension
+    // height at 0xC4. The speeds are picked so radius * rad/s == the 55.55 m/s
+    // ground speed above, which is what the dashboard's slip check compares.
+    const float tireRadius = 0.33f;
+    const float wheelRadS  = 55.55f / tireRadius;
+    for (int i = 0; i < 4; i++)
+    {
+        BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0xA4 + i * 4, 4), wheelRadS);
+        BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0xB4 + i * 4, 4), tireRadius);
+        BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0xC4 + i * 4, 4), 0.05f + i);
+    }
     // Encrypt: build a ciphertext whose IV bytes at 0x40..0x44 equal the chosen
     // literal, so the receiver derives the same Salsa20 nonce we used.
     byte[] cipher = Gt7UdpClient.EncryptForTest(plaintext, 0x12345678u);
@@ -53,6 +64,17 @@ Console.WriteLine("=== GT7 telemetry smoke test ===");
     Require("brake",     packet.Brake == 40);
     Require("packetId",  packet.PacketId == 12345);
     Require("lap",       packet.CurrentLap == 3 && packet.TotalLaps == 10);
+
+    Require("wheelSpeedFL", Math.Abs(packet.WheelSpeedFL - wheelRadS) < 0.01f);
+    Require("wheelSpeedRR", Math.Abs(packet.WheelSpeedRR - wheelRadS) < 0.01f);
+    Require("tireRadiusFL", Math.Abs(packet.TireRadiusFL - tireRadius) < 0.001f);
+    Require("tireRadiusRR", Math.Abs(packet.TireRadiusRR - tireRadius) < 0.001f);
+    Require("suspensionFL", Math.Abs(packet.SuspensionFL - 0.05f) < 0.001f);
+    Require("suspensionRR", Math.Abs(packet.SuspensionRR - 3.05f) < 0.001f);
+    // Free-rolling wheels must agree with ground speed, otherwise the dashboard
+    // marks every tire dirty (brown) as soon as the car starts moving.
+    Require("wheelLinearSpeedMatchesGroundSpeed",
+        Math.Abs(packet.WheelSpeedFL * packet.TireRadiusFL - packet.SpeedMps) < 0.05f);
 
     Console.WriteLine("OK  in-memory round trip: all fields match");
 }

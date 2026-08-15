@@ -73,7 +73,7 @@ public sealed record TelemetryPacket
     public byte Brake         { get; init; } // 0..255
 
     // Wheels
-    public float WheelSpeedFL { get; init; } // rad/s
+    public float WheelSpeedFL { get; init; } // rad/s (multiply by TireRadius* for m/s)
     public float WheelSpeedFR { get; init; }
     public float WheelSpeedRL { get; init; }
     public float WheelSpeedRR { get; init; }
@@ -172,20 +172,23 @@ public sealed record TelemetryPacket
             Throttle      = p[0x91],
             Brake         = p[0x92],
 
-            WheelSpeedFL = ReadFloat(p, 0xB4),
-            WheelSpeedFR = ReadFloat(p, 0xB8),
-            WheelSpeedRL = ReadFloat(p, 0xBC),
-            WheelSpeedRR = ReadFloat(p, 0xC0),
+            // 0x94..0xA4 is the road plane (normal xyz + distance), not exposed.
+            // Wheel angular speed lives at 0xA4, tire radius at 0xB4 and
+            // suspension height at 0xC4; 0xD4..0xF4 is unused padding.
+            WheelSpeedFL = ReadFloat(p, 0xA4),
+            WheelSpeedFR = ReadFloat(p, 0xA8),
+            WheelSpeedRL = ReadFloat(p, 0xAC),
+            WheelSpeedRR = ReadFloat(p, 0xB0),
 
-            TireRadiusFL = ReadFloat(p, 0xC4),
-            TireRadiusFR = ReadFloat(p, 0xC8),
-            TireRadiusRL = ReadFloat(p, 0xCC),
-            TireRadiusRR = ReadFloat(p, 0xD0),
+            TireRadiusFL = ReadFloat(p, 0xB4),
+            TireRadiusFR = ReadFloat(p, 0xB8),
+            TireRadiusRL = ReadFloat(p, 0xBC),
+            TireRadiusRR = ReadFloat(p, 0xC0),
 
-            SuspensionFL = ReadFloat(p, 0xD4),
-            SuspensionFR = ReadFloat(p, 0xD8),
-            SuspensionRL = ReadFloat(p, 0xDC),
-            SuspensionRR = ReadFloat(p, 0xE0),
+            SuspensionFL = ReadFloat(p, 0xC4),
+            SuspensionFR = ReadFloat(p, 0xC8),
+            SuspensionRL = ReadFloat(p, 0xCC),
+            SuspensionRR = ReadFloat(p, 0xD0),
 
             ClutchPedal      = ReadFloat(p, 0xF4),
             ClutchEngagement = ReadFloat(p, 0xF8),

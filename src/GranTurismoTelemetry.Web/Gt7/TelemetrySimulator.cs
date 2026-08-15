@@ -56,6 +56,18 @@ public sealed class TelemetrySimulator
             double rpm = 1500 + (speedKph / gearMax[gear]) * 7000 + rng.NextDouble() * 100;
             rpm = Math.Clamp(rpm, 900, 8800);
 
+            // Scripted off-track excursion once per lap so the dashboard's dirty-tire
+            // heuristic (which watches the CarOnTrack bit) has something to react to
+            // in simulator mode. During the window all four wheels get flagged; the
+            // browser-side ~2 s cooldown then keeps them brown briefly after re-entry.
+            bool onTrack = !(t >= 0.70 && t < 0.76);
+
+            // Realistic-ish wheel telemetry: matching angular speeds against the
+            // ground speed so the slip branch of the JS heuristic stays quiet on
+            // clean laps. Radius ~0.33 m ≈ a typical road-car tire.
+            const float tireRadius = 0.33f;
+            float wheelRadS = (float)(speedMps / tireRadius);
+
             var pkt = new TelemetryPacket
             {
                 PacketId   = packetId++,
@@ -87,7 +99,19 @@ public sealed class TelemetrySimulator
                 AlertMaxRpm = 8500,
                 CalcMaxSpeedKph = 320,
 
-                Flags = SimulatorFlags.CarOnTrack | SimulatorFlags.InGear | SimulatorFlags.HasTurbo,
+                Flags = (onTrack ? SimulatorFlags.CarOnTrack : SimulatorFlags.None)
+                        | SimulatorFlags.InGear
+                        | SimulatorFlags.HasTurbo,
+
+                WheelSpeedFL = wheelRadS,
+                WheelSpeedFR = wheelRadS,
+                WheelSpeedRL = wheelRadS,
+                WheelSpeedRR = wheelRadS,
+
+                TireRadiusFL = tireRadius,
+                TireRadiusFR = tireRadius,
+                TireRadiusRL = tireRadius,
+                TireRadiusRR = tireRadius,
 
                 GearRatios = new float[] { 3.5f, 2.4f, 1.8f, 1.4f, 1.1f, 0.9f, 0.7f, 0f },
             };
