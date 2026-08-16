@@ -52,6 +52,14 @@
     let smoothRpm = 0, smoothSpeed = 0;
     const SMOOTH_ALPHA = 0.35;
 
+    // Per-wheel dirty state: each value is the wall-clock timestamp at which the
+    // dirty flag expires (0 = not dirty). Populated by computeDirty(); consumed
+    // by setTire() via the callsites in onPacket().
+    const dirty = { fl: 0, fr: 0, rl: 0, rr: 0 };
+    const DIRTY_SLIP_THRESHOLD = 0.25;
+    const DIRTY_MIN_SPEED_MPS  = 5;
+    const DIRTY_COOLDOWN_MS    = 2000;
+
     // ----- Unit toggle ------------------------------------------------------
     el.unitKmh.addEventListener("click", () => setUnit("kmh"));
     el.unitMph.addEventListener("click", () => setUnit("mph"));
@@ -263,10 +271,12 @@
         el.bestLap.textContent  = formatLap(p.bestLapMs);
 
         // ---- Tires ----
-        setTire(el.tireFL, p.tireTempFL);
-        setTire(el.tireFR, p.tireTempFR);
-        setTire(el.tireRL, p.tireTempRL);
-        setTire(el.tireRR, p.tireTempRR);
+        const now = Date.now();
+        computeDirty(p, now);
+        setTire(el.tireFL, p.tireTempFL, now < dirty.fl);
+        setTire(el.tireFR, p.tireTempFR, now < dirty.fr);
+        setTire(el.tireRL, p.tireTempRL, now < dirty.rl);
+        setTire(el.tireRR, p.tireTempRR, now < dirty.rr);
 
         // ---- Car misc ----
         const fuelPct = clamp(p.fuelPercent ?? 0, 0, 100);
@@ -310,7 +320,7 @@
         return " on-red";
     }
 
-    function setTire(node, temp) {
+    function setTire(node, temp, isDirty) {
         const t = temp ?? 0;
         node.querySelector(".temp").textContent = `${Math.round(t)}°`;
         node.classList.remove("cold", "optimal", "warm", "hot");
@@ -318,6 +328,35 @@
         else if (t < 95)  node.classList.add("optimal");
         else if (t < 110) node.classList.add("warm");
         else              node.classList.add("hot");
+        node.classList.toggle("dirty", !!isDirty);
+    }
+
+    // GT7 doesn't publish an explicit "tire is dirty" flag, so we derive it from
+    // two signals: the game's CarOnTrack bit (strong), and per-wheel tangential
+    // speed vs. ground speed divergence (weak). Once triggered, a wheel stays
+    // flagged for DIRTY_COOLDOWN_MS so the badge doesn't flicker.
+    function computeDirty(p, now) {
+        const v = p.speedMps || 0;
+        const offTrack = (p.flags & FLAG_ON_TRACK) === 0;
+        const wheels = [
+            ["fl", p.wheelSpeedFL, p.tireRadiusFL],
+            ["fr", p.wheelSpeedFR, p.tireRadiusFR],
+            ["rl", p.wheelSpeedRL, p.tireRadiusRL],
+            ["rr", p.wheelSpeedRR, p.tireRadiusRR],
+        ];
+        for (const [key, w, r] of wheels) {
+            // Wheel speed is signed (negative while reversing); only the magnitude
+            // matters when comparing against the unsigned ground speed.
+            const wheelLin = Math.abs((w || 0) * (r || 0));
+            // Treat missing wheel-speed/radius (early frames or simulator) as
+            // "no slip" instead of infinite slip vs. ground speed.
+            const slip = Math.abs(v) < DIRTY_MIN_SPEED_MPS || wheelLin === 0
+                ? 0
+                : Math.abs(wheelLin - Math.abs(v)) / Math.abs(v);
+            if (offTrack || slip > DIRTY_SLIP_THRESHOLD) {
+                dirty[key] = now + DIRTY_COOLDOWN_MS;
+            }
+        }
     }
 
     function setFlag(name, on) {
