@@ -10,12 +10,16 @@ and streams the values into a live browser dashboard over SignalR.
 ## Features
 
 - **Live dashboard** in the browser: RPM arc with shift lights, big centered
-  gear and speed, throttle/brake bars, tire temperatures with color-coded
-  bands, fuel bar, boost, oil/water temps, and lap timing (current, last,
-  best).
+  gear and speed, clutch/brake/throttle bars, tire temperatures with
+  color-coded bands, fuel bar, and lap timing (current, last, best).
+- **Ten mini dials**, generated from a single `GAUGE_SPECS` table in
+  `dashboard.js`: boost, oil temp, water temp, oil pressure, fuel, incline,
+  altitude, cornering load, wheel slip, and ride height. Each has its own
+  range, smoothing, colour zones, and greys out to `N/A` when the car does not
+  report that value (e.g. boost on a naturally-aspirated car).
 - **Status flags**: on-track, paused, turbo, rev-limiter, TCS, ASM, lights,
   handbrake.
-- **Unit toggle**: km/h ↔ mph (remembered in `localStorage`).
+- **Unit toggles**: km/h ↔ mph and °C ↔ °F (remembered in `localStorage`).
 - **Built-in simulator** — the dashboard works without a PS5. Useful for
   UI development, demoing, or when the console is off.
 - **Live UDP** mode with automatic heartbeat, Salsa20 decryption, and
