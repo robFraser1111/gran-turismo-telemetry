@@ -7,17 +7,26 @@ and streams the values into a live browser dashboard over SignalR.
 
 ![Dashboard](docs/screenshot.png)
 
+![Suggested gear badge](docs/suggested-gear-preview.svg)
+
+The cyan **SHIFT** badge appears next to the current gear when GT7 recommends
+a different ratio. It is hidden when you are already in that gear.
+
 ## Features
 
 - **Live dashboard** in the browser: RPM arc with shift lights, big centered
   gear and speed, throttle/brake bars, tire temperatures with color-coded
   bands, fuel bar, boost, oil/water temps, and lap timing (current, last,
   best).
+- **Suggested gear**: a SHIFT badge next to the current gear when GT7
+  recommends a different ratio. Hidden when already in the right gear
+  (packet value 15 = none). Cyan for upshift, amber for downshift.
 - **Status flags**: on-track, paused, turbo, rev-limiter, TCS, ASM, lights,
   handbrake.
 - **Unit toggle**: km/h ↔ mph (remembered in `localStorage`).
 - **Built-in simulator** — the dashboard works without a PS5. Useful for
-  UI development, demoing, or when the console is off.
+  UI development, demoing, or when the console is off. The simulator now
+  hints an upshift near redline and a downshift under heavy braking.
 - **Live UDP** mode with automatic heartbeat, Salsa20 decryption, and
   the Windows-specific `SIO_UDP_CONNRESET` fix so a missing PS5 does not
   kill the receive loop.

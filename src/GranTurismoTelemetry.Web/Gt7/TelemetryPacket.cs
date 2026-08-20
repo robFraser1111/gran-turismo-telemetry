@@ -108,6 +108,18 @@ public sealed record TelemetryPacket
         var g => g.ToString()
     };
 
+    /// <summary>Human-readable suggested gear. Empty when GT7 reports none (15).</summary>
+    public string SuggestedGearDisplay => SuggestedGear switch
+    {
+        0     => "N",
+        15    => "",
+        var g => g.ToString()
+    };
+
+    /// <summary>True when the packet recommends a gear other than the current one.</summary>
+    public bool HasSuggestedGear =>
+        SuggestedGear is > 0 and < 15 && SuggestedGear != CurrentGear;
+
     /// <summary>Parses a decrypted GT7 packet. Requires at least 296 (0x128) bytes;
     /// the last field read is <c>CarCode</c> at offset 0x124..0x128.</summary>
     public static TelemetryPacket Parse(ReadOnlySpan<byte> p)

@@ -62,7 +62,14 @@
         </svg>
 
         <div class="center-readout">
-            <div class="gear" id="gear">N</div>
+            <div class="gear-row">
+                <div class="gear" id="gear">N</div>
+                <div class="suggested-gear hidden" id="suggested-gear" aria-live="polite">
+                    <span class="suggested-label">SHIFT</span>
+                    <span class="suggested-value" id="suggested-gear-val">—</span>
+                    <span class="suggested-dir" id="suggested-gear-dir"></span>
+                </div>
+            </div>
             <div class="speed">
                 <span class="speed-value" id="speed">0</span>
                 <span class="speed-unit" id="speed-unit">km/h</span>
