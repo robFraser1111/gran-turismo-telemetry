@@ -28,6 +28,9 @@
         unitKmh: $("unit-kmh"), unitMph: $("unit-mph"),
         rpmFill: $("rpm-fill"), rpmLights: $("rpm-lights"),
         gear: $("gear"), rpm: $("rpm"),
+        suggestedGear: $("suggested-gear"),
+        suggestedGearVal: $("suggested-gear-val"),
+        suggestedGearDir: $("suggested-gear-dir"),
         speed: $("speed"), speedUnit: $("speed-unit"),
         throttleBar: $("throttle-bar"), throttleVal: $("throttle-val"),
         brakeBar: $("brake-bar"), brakeVal: $("brake-val"),
@@ -245,6 +248,7 @@
         el.gear.classList.toggle("neutral", g === "N");
         el.gear.classList.toggle("rev",     g === "R");
         el.speed.textContent = Math.round(smoothSpeed);
+        updateSuggestedGear(p);
 
         // ---- Pedals ----
         const thr = ((p.throttle ?? 0) / 255) * 100;
@@ -291,6 +295,20 @@
     // ----- Helpers ----------------------------------------------------------
     function lerp(a, b, t) { return a + (b - a) * t; }
     function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    function updateSuggestedGear(p) {
+        if (!el.suggestedGear) return;
+        const current = p.currentGear ?? 0;
+        const suggested = p.suggestedGear ?? 15;
+        const has = p.hasSuggestedGear === true
+            || (suggested > 0 && suggested < 15 && suggested !== current);
+        el.suggestedGear.classList.toggle("hidden", !has);
+        el.suggestedGear.classList.toggle("up", has && suggested > current);
+        el.suggestedGear.classList.toggle("down", has && suggested < current);
+        if (!has) return;
+        el.suggestedGearVal.textContent = p.suggestedGearDisplay || (suggested === 0 ? "N" : String(suggested));
+        el.suggestedGearDir.textContent = suggested > current ? "▲" : "▼";
+    }
 
     function updateShiftLights(rpm, from, to, revLimiter) {
         const range = Math.max(1, to - from);
