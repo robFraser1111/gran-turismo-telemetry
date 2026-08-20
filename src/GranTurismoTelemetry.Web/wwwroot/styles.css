@@ -134,6 +134,12 @@ html, body {
     margin-top: -110px; /* pull it into the arc */
     z-index: 2;
 }
+.gear-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 14px;
+}
 .gear {
     font-family: var(--mono);
     font-weight: 700; font-size: 130px; line-height: 1;
@@ -142,6 +148,47 @@ html, body {
 }
 .gear.rev { color: var(--warn); }
 .gear.neutral { color: var(--text-dim); }
+.suggested-gear {
+    margin-top: 22px;
+    min-width: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 10px 10px;
+    border-radius: 8px;
+    background: rgba(31, 211, 255, 0.08);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 18px rgba(31, 211, 255, 0.22);
+}
+.suggested-gear.hidden { visibility: hidden; }
+.suggested-label {
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--accent);
+    font-weight: 700;
+}
+.suggested-value {
+    font-family: var(--mono);
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+}
+.suggested-dir {
+    font-size: 14px;
+    color: var(--accent);
+    margin-top: 2px;
+}
+.suggested-gear.down {
+    background: rgba(255, 176, 46, 0.10);
+    border-color: var(--warn);
+    box-shadow: 0 0 18px rgba(255, 176, 46, 0.22);
+}
+.suggested-gear.down .suggested-label,
+.suggested-gear.down .suggested-value,
+.suggested-gear.down .suggested-dir {
+    color: var(--warn);
+}
 .speed { display: flex; align-items: baseline; gap: 8px; }
 .speed-value { font-size: 60px; font-weight: 700; font-family: var(--mono); }
 .speed-unit  { color: var(--text-dim); font-size: 14px; letter-spacing: 0.2em; }
@@ -234,4 +281,5 @@ html, body {
     .center-readout { margin-top: -90px; }
     .gear { font-size: 100px; }
     .speed-value { font-size: 46px; }
+    .suggested-value { font-size: 32px; }
 }
