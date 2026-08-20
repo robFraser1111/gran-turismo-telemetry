@@ -7,6 +7,11 @@ and streams the values into a live browser dashboard over SignalR.
 
 ![Dashboard](docs/screenshot.png)
 
+![Suggested gear badge](docs/suggested-gear-preview.svg)
+
+The cyan **SHIFT** badge appears next to the current gear when GT7 recommends
+a different ratio. It is hidden when you are already in that gear.
+
 ## Features
 
 - **Live dashboard** in the browser: RPM arc with shift lights, big centered
