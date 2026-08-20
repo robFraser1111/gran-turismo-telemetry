@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 760" role="img" aria-label="Gran Telemetry dashboard with suggested gear badge">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#101827"/>
+      <stop offset="1" stop-color="#05070b"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#10151f"/>
+      <stop offset="1" stop-color="#0a0d13"/>
+    </linearGradient>
+    <linearGradient id="rpm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1fd3ff"/>
+      <stop offset="0.55" stop-color="#eaeaea"/>
+      <stop offset="0.85" stop-color="#ffb02e"/>
+      <stop offset="1" stop-color="#ff2b3a"/>
+    </linearGradient>
+    <linearGradient id="thr" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#37e08a"/>
+    </linearGradient>
+    <linearGradient id="brk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b91c1c"/>
+      <stop offset="1" stop-color="#ff2b3a"/>
+    </linearGradient>
+    <linearGradient id="fuel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff2b3a"/>
+      <stop offset="0.22" stop-color="#ffb02e"/>
+      <stop offset="0.4" stop-color="#37e08a"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="760" fill="url(#bg)"/>
+
+  <!-- topbar -->
+  <rect width="1280" height="54" fill="#0a0d13"/>
+  <rect y="54" width="1280" height="1" fill="#212a3a"/>
+  <rect x="20" y="20" width="14" height="14" rx="3" fill="#1fd3ff"/>
+  <text x="44" y="34" fill="#e6edf7" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="1">GRAN <tspan fill="#1fd3ff" letter-spacing="6">TELEMETRY</tspan></text>
+  <circle cx="430" cy="27" r="5" fill="#37e08a"/>
+  <text x="442" y="32" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">receiving telemetry · SIMULATOR · no PS5</text>
+  <rect x="1148" y="16" width="52" height="24" rx="4" fill="#1fd3ff"/>
+  <text x="1174" y="33" text-anchor="middle" fill="#05131c" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="700">KM/H</text>
+  <rect x="1202" y="16" width="52" height="24" rx="4" fill="none" stroke="#212a3a"/>
+  <text x="1228" y="33" text-anchor="middle" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="700">MPH</text>
+
+  <!-- main panel -->
+  <rect x="16" y="70" width="740" height="674" rx="10" fill="url(#panel)" stroke="#212a3a"/>
+
+  <!-- shift lights -->
+  <g transform="translate(70,92)">
+    <rect x="0" y="0" width="30" height="14" rx="2" fill="#37e08a"/>
+    <rect x="38" y="0" width="30" height="14" rx="2" fill="#37e08a"/>
+    <rect x="76" y="0" width="30" height="14" rx="2" fill="#37e08a"/>
+    <rect x="114" y="0" width="30" height="14" rx="2" fill="#37e08a"/>
+    <rect x="152" y="0" width="30" height="14" rx="2" fill="#37e08a"/>
+    <rect x="190" y="0" width="30" height="14" rx="2" fill="#ffb02e"/>
+    <rect x="228" y="0" width="30" height="14" rx="2" fill="#ffb02e"/>
+    <rect x="266" y="0" width="30" height="14" rx="2" fill="#ffb02e"/>
+    <rect x="304" y="0" width="30" height="14" rx="2" fill="#ffb02e"/>
+    <rect x="342" y="0" width="30" height="14" rx="2" fill="#ffb02e"/>
+    <rect x="380" y="0" width="30" height="14" rx="2" fill="#ff2b3a"/>
+    <rect x="418" y="0" width="30" height="14" rx="2" fill="#ff2b3a"/>
+    <rect x="456" y="0" width="30" height="14" rx="2" fill="#1a2231" stroke="#232d40"/>
+    <rect x="494" y="0" width="30" height="14" rx="2" fill="#1a2231" stroke="#232d40"/>
+    <rect x="532" y="0" width="30" height="14" rx="2" fill="#1a2231" stroke="#232d40"/>
+  </g>
+
+  <!-- rpm arc -->
+  <path d="M 80 430 A 300 300 0 0 1 692 430" fill="none" stroke="#141a24" stroke-width="26" stroke-linecap="round"/>
+  <path d="M 80 430 A 300 300 0 0 1 692 430" fill="none" stroke="url(#rpm)" stroke-width="26" stroke-linecap="round" stroke-dasharray="720 1000"/>
+
+  <!-- current gear + suggested badge -->
+  <text x="340" y="360" text-anchor="middle" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="150" font-weight="700" filter="url(#glow)">3</text>
+
+  <g transform="translate(430,215)">
+    <rect x="0" y="0" width="86" height="118" rx="8" fill="rgba(31,211,255,0.10)" stroke="#1fd3ff" stroke-width="1.5"/>
+    <text x="43" y="22" text-anchor="middle" fill="#1fd3ff" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="3">SHIFT</text>
+    <text x="43" y="78" text-anchor="middle" fill="#1fd3ff" font-family="JetBrains Mono, Consolas, monospace" font-size="52" font-weight="700">4</text>
+    <polygon points="43,92 36,104 50,104" fill="#1fd3ff"/>
+  </g>
+
+  <text x="386" y="430" text-anchor="end" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="56" font-weight="700">184</text>
+  <text x="396" y="422" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" letter-spacing="2">km/h</text>
+  <text x="386" y="462" text-anchor="end" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16">8,120 <tspan fill="#6a7180">rpm</tspan></text>
+
+  <!-- pedals -->
+  <text x="48" y="560" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" letter-spacing="3">THROTTLE</text>
+  <rect x="48" y="568" width="320" height="18" rx="3" fill="#0d1420" stroke="#212a3a"/>
+  <rect x="48" y="568" width="288" height="18" rx="3" fill="url(#thr)"/>
+  <text x="368" y="582" text-anchor="end" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="14">90%</text>
+
+  <text x="404" y="560" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" letter-spacing="3">BRAKE</text>
+  <rect x="404" y="568" width="320" height="18" rx="3" fill="#0d1420" stroke="#212a3a"/>
+  <rect x="404" y="568" width="16" height="18" rx="3" fill="url(#brk)"/>
+  <text x="724" y="582" text-anchor="end" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="14">4%</text>
+
+  <!-- side panels -->
+  <rect x="772" y="70" width="492" height="150" rx="10" fill="url(#panel)" stroke="#212a3a"/>
+  <text x="792" y="96" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" letter-spacing="4">SESSION</text>
+  <text x="792" y="122" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">LAP</text>
+  <text x="792" y="150" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="26">2 / 5</text>
+  <text x="1010" y="122" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">POSITION</text>
+  <text x="1010" y="150" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="26">—</text>
+  <text x="792" y="178" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">LAST LAP</text>
+  <text x="792" y="204" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="22">1:01.842</text>
+  <text x="1010" y="178" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">BEST LAP</text>
+  <text x="1010" y="204" fill="#b98cff" font-family="JetBrains Mono, Consolas, monospace" font-size="22">1:00.317</text>
+
+  <rect x="772" y="236" width="492" height="168" rx="10" fill="url(#panel)" stroke="#212a3a"/>
+  <text x="792" y="262" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" letter-spacing="4">TIRE TEMPERATURE</text>
+  <rect x="792" y="280" width="220" height="46" rx="6" fill="#0d1420" stroke="#37e08a"/>
+  <text x="808" y="308" fill="#8b95a8" font-family="JetBrains Mono, Consolas, monospace" font-size="12">FL</text>
+  <text x="980" y="310" text-anchor="end" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="20">87°</text>
+  <rect x="1024" y="280" width="220" height="46" rx="6" fill="#0d1420" stroke="#37e08a"/>
+  <text x="1040" y="308" fill="#8b95a8" font-family="JetBrains Mono, Consolas, monospace" font-size="12">FR</text>
+  <text x="1212" y="310" text-anchor="end" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="20">89°</text>
+  <rect x="792" y="336" width="220" height="46" rx="6" fill="#0d1420" stroke="#37e08a"/>
+  <text x="808" y="364" fill="#8b95a8" font-family="JetBrains Mono, Consolas, monospace" font-size="12">RL</text>
+  <text x="980" y="366" text-anchor="end" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="20">93°</text>
+  <rect x="1024" y="336" width="220" height="46" rx="6" fill="#0d1420" stroke="#ffb02e"/>
+  <text x="1040" y="364" fill="#8b95a8" font-family="JetBrains Mono, Consolas, monospace" font-size="12">RR</text>
+  <text x="1212" y="366" text-anchor="end" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="20">98°</text>
+
+  <rect x="772" y="420" width="492" height="168" rx="10" fill="url(#panel)" stroke="#212a3a"/>
+  <text x="792" y="446" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" letter-spacing="4">CAR</text>
+  <text x="792" y="470" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">FUEL</text>
+  <rect x="792" y="478" width="200" height="12" rx="3" fill="#0d1420" stroke="#212a3a"/>
+  <rect x="792" y="478" width="96" height="12" rx="3" fill="url(#fuel)"/>
+  <text x="792" y="512" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="16">48.0%</text>
+  <text x="1010" y="470" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">BOOST</text>
+  <text x="1010" y="502" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="24">0.48 <tspan fill="#8b95a8" font-size="13">bar</tspan></text>
+  <text x="792" y="542" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">OIL TEMP</text>
+  <text x="792" y="568" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="22">108 <tspan fill="#8b95a8" font-size="13">°C</tspan></text>
+  <text x="1010" y="542" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3">WATER TEMP</text>
+  <text x="1010" y="568" fill="#e6edf7" font-family="JetBrains Mono, Consolas, monospace" font-size="22">88 <tspan fill="#8b95a8" font-size="13">°C</tspan></text>
+
+  <rect x="772" y="604" width="492" height="140" rx="10" fill="url(#panel)" stroke="#212a3a"/>
+  <text x="792" y="630" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" letter-spacing="4">STATUS</text>
+  <rect x="792" y="648" width="92" height="26" rx="4" fill="rgba(31,211,255,0.12)" stroke="#1fd3ff"/>
+  <text x="838" y="666" text-anchor="middle" fill="#1fd3ff" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" letter-spacing="1">ON TRACK</text>
+  <rect x="892" y="648" width="78" height="26" rx="4" fill="#0d1420" stroke="#212a3a"/>
+  <text x="931" y="666" text-anchor="middle" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" letter-spacing="1">PAUSED</text>
+  <rect x="978" y="648" width="72" height="26" rx="4" fill="rgba(31,211,255,0.12)" stroke="#1fd3ff"/>
+  <text x="1014" y="666" text-anchor="middle" fill="#1fd3ff" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" letter-spacing="1">TURBO</text>
+  <rect x="1058" y="648" width="92" height="26" rx="4" fill="#0d1420" stroke="#212a3a"/>
+  <text x="1104" y="666" text-anchor="middle" fill="#8b95a8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" letter-spacing="1">REV LIMIT</text>
+</svg>
