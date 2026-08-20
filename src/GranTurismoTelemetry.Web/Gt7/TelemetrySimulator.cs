@@ -56,6 +56,13 @@ public sealed class TelemetrySimulator
             double rpm = 1500 + (speedKph / gearMax[gear]) * 7000 + rng.NextDouble() * 100;
             rpm = Math.Clamp(rpm, 900, 8800);
 
+            // Mimic GT7's shift hint: 15 = none. Suggest up near redline, down under heavy braking.
+            int suggested = 15;
+            if (throttle > 0.8 && rpm > 7500 && gear < gearMax.Length - 1)
+                suggested = gear + 1;
+            else if (brake > 0.5 && gear > 1)
+                suggested = gear - 1;
+
             var pkt = new TelemetryPacket
             {
                 PacketId   = packetId++,
@@ -64,7 +71,7 @@ public sealed class TelemetrySimulator
                 Throttle   = (byte)Math.Clamp(throttle * 255, 0, 255),
                 Brake      = (byte)Math.Clamp(brake * 255, 0, 255),
                 CurrentGear = gear,
-                SuggestedGear = 15,
+                SuggestedGear = suggested,
 
                 FuelCapacity = 100f,
                 FuelLevel    = (float)Math.Max(5, 100 - packetId * 0.001),
