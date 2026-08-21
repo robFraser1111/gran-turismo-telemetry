@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="GT">
+  <defs>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1fd3ff"/>
+      <stop offset="1" stop-color="#b98cff"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#mark)"/>
+  <g fill="none" stroke="#05070b" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round">
+    <!-- G: open arc + midline spur -->
+    <path d="M14.15 11.84 A 5.6 5.6 0 1 0 13.85 20.41"/>
+    <path d="M10.4 16 H15.6"/>
+    <!-- T -->
+    <path d="M19.6 10.4 H27"/>
+    <path d="M23.3 10.4 V21.6"/>
+  </g>
+</svg>
