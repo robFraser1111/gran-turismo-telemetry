@@ -67,7 +67,7 @@ public sealed record TelemetryPacket
     // Flags (see SimulatorFlags)
     public SimulatorFlags Flags { get; init; }
 
-    public int  CurrentGear   { get; init; } // 0 = neutral, 15 = reverse (raw 0x0F)
+    public int  CurrentGear   { get; init; } // 0 = reverse, 15 = neutral (raw 0x0F)
     public int  SuggestedGear { get; init; } // 15 = none
     public byte Throttle      { get; init; } // 0..255
     public byte Brake         { get; init; } // 0..255
@@ -103,8 +103,8 @@ public sealed record TelemetryPacket
     public double FuelPercent => FuelCapacity > 0 ? (FuelLevel / FuelCapacity) * 100.0 : FuelLevel;
     public string GearDisplay => CurrentGear switch
     {
-        0     => "N",
-        15    => "R",
+        0     => "R",
+        15    => "N",
         var g => g.ToString()
     };
 

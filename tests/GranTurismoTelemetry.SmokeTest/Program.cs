@@ -35,6 +35,16 @@ Console.WriteLine("=== GT7 telemetry smoke test ===");
     plaintext[0x90] = 0x04;                                                            // gear 4, no shift hint
     plaintext[0x91] = 200;                                                             // throttle
     plaintext[0x92] = 40;                                                              // brake
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0xF4, 4), 0.85f);        // clutchPedal
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0x08, 4), 512.5f);       // positionY (altitude, m)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0x14, 4), 3.25f);        // velocityY (climb rate, m/s)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0x30, 4), 0.42f);        // angularVelocityY (yaw rate, rad/s)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0x38, 4), 0.085f);       // rideHeight (m)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0x54, 4), 4.75f);        // oilPressure (bar)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0x58, 4), 88.0f);        // waterTemp (°C)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0x5C, 4), 108.0f);       // oilTemp (°C)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0xB4, 4), 168.3f);       // wheelSpeedFL (rad/s)
+    BinaryPrimitives.WriteSingleLittleEndian(plaintext.AsSpan(0xC4, 4), 0.33f);        // tireRadiusFL (m)
     // Encrypt: build a ciphertext whose IV bytes at 0x40..0x44 equal the chosen
     // literal, so the receiver derives the same Salsa20 nonce we used.
     byte[] cipher = Gt7UdpClient.EncryptForTest(plaintext, 0x12345678u);
@@ -51,10 +61,28 @@ Console.WriteLine("=== GT7 telemetry smoke test ===");
     Require("gear",      packet.CurrentGear == 4);
     Require("throttle",  packet.Throttle == 200);
     Require("brake",     packet.Brake == 40);
+    Require("clutch",    Math.Abs(packet.ClutchPedal - 0.85f) < 0.01f);
+    Require("positionY", Math.Abs(packet.PositionY - 512.5f) < 0.01f);
+    Require("velocityY", Math.Abs(packet.VelocityY - 3.25f) < 0.01f);
+    Require("yawRate",   Math.Abs(packet.AngularVelocityY - 0.42f) < 0.01f);
+    Require("rideHeight",Math.Abs(packet.RideHeight - 0.085f) < 0.001f);
+    Require("oilPress",  Math.Abs(packet.OilPressure - 4.75f) < 0.01f);
+    Require("waterTemp", Math.Abs(packet.WaterTemp - 88.0f) < 0.01f);
+    Require("oilTemp",   Math.Abs(packet.OilTemp - 108.0f) < 0.01f);
+    Require("wheelFL",   Math.Abs(packet.WheelSpeedFL - 168.3f) < 0.01f);
+    Require("radiusFL",  Math.Abs(packet.TireRadiusFL - 0.33f) < 0.001f);
     Require("packetId",  packet.PacketId == 12345);
     Require("lap",       packet.CurrentLap == 3 && packet.TotalLaps == 10);
 
     Console.WriteLine("OK  in-memory round trip: all fields match");
+}
+
+// ---- Gear labels: GT7 uses 0 = reverse, 15 = neutral ----------------------
+{
+    Require("gearDisplay-N", new TelemetryPacket { CurrentGear = 15 }.GearDisplay == "N");
+    Require("gearDisplay-R", new TelemetryPacket { CurrentGear = 0 }.GearDisplay == "R");
+    Require("gearDisplay-4", new TelemetryPacket { CurrentGear = 4 }.GearDisplay == "4");
+    Console.WriteLine("OK  gear display: N / R / numbered");
 }
 
 // ---- 2. Optional: live UDP into a locally running receiver ----------------
