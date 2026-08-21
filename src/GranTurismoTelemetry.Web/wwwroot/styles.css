@@ -21,6 +21,7 @@
 * { box-sizing: border-box; }
 html, body {
     margin: 0; padding: 0; height: 100%;
+    height: 100dvh;
     background: radial-gradient(circle at top, #101827 0%, var(--bg-0) 60%);
     color: var(--text);
     font-family: var(--font);
@@ -28,22 +29,57 @@ html, body {
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
 }
+body { display: flex; flex-direction: column; }
 
 /* --- Top bar ------------------------------------------------------------- */
 .topbar {
     display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
     padding: 10px 20px;
     background: linear-gradient(180deg, rgba(31, 211, 255, 0.06), transparent);
     border-bottom: 1px solid var(--line);
+    flex: 0 0 auto;
+    z-index: 40;
 }
-.brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; }
+.brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; min-width: 0; }
+
+.menu-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+    background: transparent; color: var(--text-dim);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 6px 10px; margin-right: 4px;
+    font-family: var(--font); font-weight: 600; letter-spacing: 0.16em;
+    font-size: 11px; cursor: pointer;
+    transition: color 120ms, border-color 120ms, background 120ms;
+}
+.menu-btn:hover,
+.sidebar-open .menu-btn {
+    color: var(--accent); border-color: var(--accent);
+    background: rgba(31, 211, 255, 0.08);
+}
+.menu-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.menu-icon {
+    display: flex; flex-direction: column; justify-content: center; gap: 3px;
+    width: 14px; height: 12px;
+}
+.menu-icon span {
+    display: block; height: 2px; background: currentColor; border-radius: 1px;
+    transition: transform 160ms ease, opacity 160ms ease;
+}
+.sidebar-open .menu-icon span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.sidebar-open .menu-icon span:nth-child(2) { opacity: 0; }
+.sidebar-open .menu-icon span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
 .brand em { color: var(--accent); font-style: normal; letter-spacing: 0.28em; margin-left: 4px; }
 .brand-mark {
     display: inline-block; width: 14px; height: 14px; border-radius: 3px;
     background: linear-gradient(135deg, var(--accent), var(--best));
     box-shadow: 0 0 12px rgba(31, 211, 255, 0.6);
 }
-.status { color: var(--text-dim); font-size: 13px; letter-spacing: 0.08em; }
+.status {
+    color: var(--text-dim); font-size: 13px; letter-spacing: 0.08em;
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .status .sep { margin: 0 8px; opacity: 0.5; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
 .dot-on  { background: var(--good); box-shadow: 0 0 8px var(--good); }
@@ -78,6 +114,7 @@ html, body {
     color: var(--bad);
 }
 
+.unit-toggles { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .unit-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .unit {
     background: transparent; color: var(--text-dim); border: none; padding: 6px 12px;
@@ -85,16 +122,150 @@ html, body {
 }
 .unit.active { background: var(--accent); color: #05131c; }
 
+/* --- Workspace + sidebar ------------------------------------------------- */
+.workspace {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    position: relative;
+}
+
+.sidebar-backdrop {
+    display: none;
+    position: absolute; inset: 0;
+    background: rgba(5, 7, 11, 0.55);
+    z-index: 20;
+}
+.sidebar-backdrop[hidden] { display: none; }
+.sidebar-open .sidebar-backdrop { display: block; }
+@media (min-width: 1101px) {
+    /* Desktop sidebar pushes the grid, so dimming the dash is unnecessary. */
+    .sidebar-backdrop { display: none !important; }
+}
+
+.sidebar {
+    position: relative;
+    flex: 0 0 260px;
+    width: 260px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 14px;
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-0) 100%);
+    border-right: 1px solid var(--line);
+    overflow: hidden;
+    z-index: 30;
+    transition: flex-basis 180ms ease, width 180ms ease, opacity 160ms ease, padding 180ms ease;
+}
+body:not(.sidebar-open) .sidebar {
+    flex: 0 1 0px;
+    width: 0;
+    min-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-right-width: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+.sidebar-open .sidebar { pointer-events: auto; }
+.sidebar-head {
+    display: flex; align-items: center; justify-content: space-between;
+    min-width: 232px; padding: 0 4px 8px;
+}
+.sidebar-head h2 {
+    margin: 0; font-size: 12px; letter-spacing: 0.28em;
+    color: var(--text-dim); font-weight: 600;
+}
+.sidebar-close {
+    background: transparent; border: none; color: var(--text-dim);
+    font-size: 22px; line-height: 1; cursor: pointer; padding: 2px 6px;
+    border-radius: 4px;
+}
+.sidebar-close:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.sidebar-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.panel-toggles {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 4px;
+    min-width: 232px; min-height: 0;
+    flex: 1 1 auto; overflow: auto;
+}
+.panel-toggle {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%;
+    padding: 10px 10px; border: none; border-radius: 8px;
+    background: transparent; color: inherit;
+    font-family: inherit; text-align: left;
+    cursor: pointer; user-select: none;
+}
+.panel-toggle:hover { background: rgba(31, 211, 255, 0.06); }
+.panel-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toggle-track {
+    position: relative; flex: 0 0 auto;
+    width: 36px; height: 20px; border-radius: 10px;
+    background: #1a2231; border: 1px solid var(--line);
+    pointer-events: none;
+    transition: background 140ms, border-color 140ms;
+}
+.toggle-track::after {
+    content: ""; position: absolute;
+    top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--text-dim);
+    transition: transform 140ms ease, background 140ms;
+}
+.panel-toggle[aria-checked="true"] .toggle-track {
+    background: rgba(31, 211, 255, 0.18);
+    border-color: var(--accent);
+}
+.panel-toggle[aria-checked="true"] .toggle-track::after {
+    transform: translateX(16px);
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(31, 211, 255, 0.55);
+}
+.toggle-name {
+    font-size: 12px; letter-spacing: 0.18em; font-weight: 600; color: var(--text);
+    pointer-events: none;
+}
+
 /* --- Layout -------------------------------------------------------------- */
 .dash {
     display: grid;
-    grid-template-columns: 1.35fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
     gap: 16px;
     padding: 16px;
-    height: calc(100vh - 55px);
-    min-height: 600px;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
 }
-.side { display: grid; grid-template-rows: auto auto auto auto; gap: 16px; min-height: 0; }
+.dash > .panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+.dash > .panel[hidden] { display: none !important; }
+.dash > .panel.span-full { grid-column: 1 / -1; }
+.dash.is-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dash-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    color: var(--text-dim); letter-spacing: 0.12em; font-size: 14px;
+}
+.dash-empty[hidden] { display: none; }
+.dash-empty p { margin: 0; }
+.empty-open-menu {
+    background: transparent; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 6px;
+    padding: 8px 14px; cursor: pointer;
+    font-family: var(--font); font-weight: 600; letter-spacing: 0.16em; font-size: 12px;
+}
+.empty-open-menu:hover { background: rgba(31, 211, 255, 0.1); }
 .panel {
     background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
     border: 1px solid var(--line);
@@ -106,12 +277,13 @@ html, body {
 .panel h2 {
     font-size: 12px; margin: 0 0 12px; letter-spacing: 0.28em;
     color: var(--text-dim); font-weight: 600;
+    width: 100%; flex: 0 0 auto;
 }
 
 /* --- Main / RPM panel ---------------------------------------------------- */
 .panel.main {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 12px 18px 18px;
+    align-items: center;
+    padding: 10px 16px 14px;
 }
 .rpm-shift-lights {
     display: flex; gap: 5px; justify-content: center;
@@ -127,51 +299,204 @@ html, body {
 .rpm-shift-lights .light.on-red    { background: var(--bad);  box-shadow: 0 0 12px var(--bad); }
 .rpm-shift-lights.flash .light     { background: var(--bad);  box-shadow: 0 0 14px var(--bad); }
 
-.rpm-arc { width: min(680px, 100%); height: auto; margin-top: 6px; }
+.rpm-cluster {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.rpm-arc {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    margin-top: 4px;
+}
 
 .center-readout {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    margin-top: -110px; /* pull it into the arc */
+    position: absolute;
+    left: 0; right: 0;
+    top: 52%;
+    transform: translateY(-18%);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
     z-index: 2;
+    pointer-events: none;
 }
 .gear {
     font-family: var(--mono);
-    font-weight: 700; font-size: 130px; line-height: 1;
+    font-weight: 700; font-size: clamp(52px, 8vh, 88px); line-height: 1;
     color: var(--text);
     text-shadow: 0 0 32px rgba(31, 211, 255, 0.35);
 }
 .gear.rev { color: var(--warn); }
 .gear.neutral { color: var(--text-dim); }
 .speed { display: flex; align-items: baseline; gap: 8px; }
-.speed-value { font-size: 60px; font-weight: 700; font-family: var(--mono); }
+.speed-value { font-size: clamp(28px, 4.2vh, 44px); font-weight: 700; font-family: var(--mono); }
 .speed-unit  { color: var(--text-dim); font-size: 14px; letter-spacing: 0.2em; }
 .rpm-readout { color: var(--text-dim); font-size: 14px; letter-spacing: 0.15em; }
 .rpm-readout em { color: var(--text-dim); font-style: normal; opacity: 0.6; }
 
-/* --- Pedals -------------------------------------------------------------- */
-.pedals {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-    width: 100%; margin-top: 20px;
+/* Fuel sits under the RPM cluster, full width of the main panel. */
+.fuel-row {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%;
+    flex: 0 0 auto;
+    margin-top: 6px;
+    padding: 0 4px;
 }
-.pedal { display: flex; flex-direction: column; }
+.fuel-row label {
+    font-size: 11px; letter-spacing: 0.28em; color: var(--text-dim);
+}
+.fuel-row .bar {
+    flex: 1;
+    height: 36px;
+    background: #0d1420;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.fuel-row .fill { height: 100%; width: 0%; transition: width 200ms ease-out; }
+.fuel-row .fill.fuel {
+    background: linear-gradient(90deg, var(--bad) 0%, var(--warn) 22%, var(--good) 40%);
+}
+.fuel-row .metric.small {
+    margin-top: 0; min-width: 72px; text-align: right;
+    font-size: 22px;
+}
+
+/* --- Pedals -------------------------------------------------------------- */
+.panel.pedals-panel {
+    padding: 14px 18px 16px;
+}
+.pedals {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.pedal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    min-height: 0;
+}
 .pedal label {
-    font-size: 11px; color: var(--text-dim);
-    letter-spacing: 0.28em; margin-bottom: 4px;
+    font-size: 10px; color: var(--text-dim);
+    letter-spacing: 0.14em; white-space: nowrap;
 }
 .pedal span {
-    text-align: right; font-family: var(--mono); font-size: 14px; margin-top: 4px;
+    text-align: center; font-family: var(--mono); font-size: 13px;
     color: var(--text);
 }
 .pedal-bar {
-    height: 18px; background: #0d1420; border-radius: 3px; overflow: hidden;
+    flex: 1 1 auto;
+    width: 88px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: #0d1420;
+    border-radius: 4px;
+    overflow: hidden;
     border: 1px solid var(--line);
 }
-.pedal-fill { height: 100%; width: 0; transition: width 40ms linear; }
-.pedal-fill.throttle { background: linear-gradient(90deg, #10b981, #37e08a); }
-.pedal-fill.brake    { background: linear-gradient(90deg, #b91c1c, #ff2b3a); }
+.pedal-fill { width: 100%; height: 0; transition: height 40ms linear; }
+.pedal-fill.throttle { background: linear-gradient(180deg, #37e08a, #10b981); }
+.pedal-fill.brake    { background: linear-gradient(180deg, #ff2b3a, #b91c1c); }
+.pedal-fill.clutch   {
+    background: linear-gradient(180deg, var(--warn), #b45309);
+    transition: height 220ms ease-in-out;
+}
+
+/* --- Mini gauges (one card per GAUGE_SPECS entry) ------------------------ */
+.panel.gauges-panel {
+    padding: 12px;
+}
+.gauges {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+.mini-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    padding: 6px 6px 4px;
+    background: #0d1420;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+.mini-gauge label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.18em;
+    white-space: nowrap;
+    margin-bottom: 2px;
+}
+.g-face {
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.mini-gauge svg { width: 100%; height: 100%; display: block; }
+.g-fill {
+    stroke: var(--accent);
+    transition: stroke-dasharray 80ms linear, stroke 150ms linear;
+}
+.g-readout {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 10%;
+    pointer-events: none;
+}
+.g-value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--text);
+}
+.g-unit {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+.mini-gauge.zone-cold .g-fill { stroke: #1e90ff; filter: drop-shadow(0 0 4px rgba(30,144,255,0.45)); }
+.mini-gauge.zone-good .g-fill { stroke: var(--good); }
+.mini-gauge.zone-warn .g-fill { stroke: var(--warn); filter: drop-shadow(0 0 5px rgba(255,176,46,0.55)); }
+.mini-gauge.zone-hot  .g-fill { stroke: var(--bad);  filter: drop-shadow(0 0 6px rgba(255,43,58,0.6)); }
+.mini-gauge.zone-warn .g-value { color: var(--warn); }
+.mini-gauge.zone-hot  .g-value { color: var(--bad); }
+.mini-gauge.na { opacity: 0.4; }
+.mini-gauge.na .g-fill { stroke: var(--text-dim); filter: none; }
+.mini-gauge.na .g-value { color: var(--text-dim); }
 
 /* --- Side panels --------------------------------------------------------- */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.grid-2 {
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 14px 22px; flex: 1; min-height: 0; align-items: start;
+}
 .grid-2 label {
     font-size: 10px; letter-spacing: 0.28em; color: var(--text-dim); display: block;
     margin-bottom: 4px;
@@ -184,8 +509,10 @@ html, body {
 .metric.best { color: var(--best); }
 
 /* Tire grid */
+.panel.tires { display: flex; flex-direction: column; min-height: 0; }
 .tire-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 10px; flex: 1; min-height: 0;
 }
 .tire {
     display: flex; justify-content: space-between; align-items: center;
@@ -200,19 +527,21 @@ html, body {
 .tire.warm  { border-color: var(--warn); box-shadow: inset 0 0 22px rgba(255,176,46,0.20); }
 .tire.hot   { border-color: var(--bad);  box-shadow: inset 0 0 24px rgba(255,43,58,0.25); }
 
-/* Bar (fuel) */
-.bar {
-    height: 12px; background: #0d1420; border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
+/* Flag chips — fill the STATUS panel now that fuel has moved out */
+.flag-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
 }
-.fill { height: 100%; width: 0%; transition: width 200ms ease-out; }
-.fill.fuel { background: linear-gradient(90deg, var(--bad) 0%, var(--warn) 22%, var(--good) 40%); }
-
-/* Flag chips */
-.flag-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .flag {
-    padding: 5px 10px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 14px; border-radius: 6px;
     background: #0d1420; border: 1px solid var(--line);
-    font-size: 11px; letter-spacing: 0.2em; color: var(--text-dim);
+    font-size: 14px; font-weight: 600; letter-spacing: 0.18em;
+    color: var(--text-dim); text-align: center; white-space: nowrap;
     transition: color 100ms, background 100ms, border-color 100ms, box-shadow 100ms;
 }
 .flag.active {
@@ -229,9 +558,47 @@ html, body {
 
 /* --- Responsive ---------------------------------------------------------- */
 @media (max-width: 1100px) {
-    .dash { grid-template-columns: 1fr; height: auto; overflow: auto; }
-    body { overflow: auto; }
-    .center-readout { margin-top: -90px; }
-    .gear { font-size: 100px; }
-    .speed-value { font-size: 46px; }
+    .dash {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .dash > .panel.span-full { grid-column: auto; }
+    .menu-label { display: none; }
+    .gauges { gap: 8px; }
+    .mini-gauge { padding: 6px 4px 4px; }
+    .g-value { font-size: 18px; }
+
+    /* Overlay drawer so stacked panels still fill the viewport. */
+    .sidebar {
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        flex: none;
+        width: min(280px, 86vw);
+        transform: translateX(-105%);
+        opacity: 1;
+        pointer-events: auto;
+        box-shadow: var(--shadow);
+        transition: transform 180ms ease;
+        padding: 16px 14px;
+        border-right-width: 1px;
+    }
+    body:not(.sidebar-open) .sidebar {
+        flex-basis: auto;
+        width: min(280px, 86vw);
+        padding: 16px 14px;
+        border-right-width: 1px;
+        opacity: 1;
+        transform: translateX(-105%);
+        pointer-events: none;
+    }
+    .sidebar-open .sidebar { transform: translateX(0); }
+}
+
+@media (max-height: 850px) {
+    .pedal-bar { width: 76px; }
+    .mini-gauge { padding: 4px 4px 2px; }
+    .mini-gauge label { font-size: 9px; letter-spacing: 0.12em; }
+    .g-value { font-size: 17px; }
+    .fuel-row .bar { height: 28px; }
+    .fuel-row .metric.small { font-size: 18px; min-width: 64px; }
+    .flag { font-size: 13px; padding: 8px 10px; letter-spacing: 0.14em; }
 }
